@@ -160,7 +160,6 @@ The system prompt considers **Monday to be in the current week**, so the date fo
 -  **Agentic workflow** with dynamic context retention
 -  **Personalized & private** — run locally with your own schema
 -  **Highly customizable** — adapt to journals, meeting notes, or project logs
--  **Secure** — no data sharing unless explicitly configured
 
 ---
 
