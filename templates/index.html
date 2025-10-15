@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timesheet Voice/Text Entry</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .projects-info {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .projects-info h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .project-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .project-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            font-size: 0.9em;
+        }
+        
+        .project-item strong {
+            color: #333;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .project-item .code {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .input-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .input-option {
+            flex: 1;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .input-option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .input-option.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .input-option h3 {
+            margin-bottom: 8px;
+        }
+        
+        .input-section {
+            display: none;
+            margin-bottom: 30px;
+        }
+        
+        .input-section.active {
+            display: block;
+        }
+        
+        .example-box {
+            background: #fffbea;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        
+        .example-box h4 {
+            color: #b45309;
+            margin-bottom: 10px;
+        }
+        
+        .example-box p {
+            color: #92400e;
+            font-style: italic;
+            line-height: 1.5;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .recording-area {
+            text-align: center;
+            padding: 30px;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+        }
+        
+        .record-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: none;
+            background: #667eea;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+        
+        .record-btn:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+        }
+        
+        .record-btn.recording {
+            background: #e74c3c;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .file-upload {
+            margin-top: 20px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-label {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-label:hover {
+            background: #5568d3;
+        }
+        
+        .file-name {
+            margin-top: 10px;
+            color: #666;
+        }
+        
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+            margin-left: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .result-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .result-section.show {
+            display: block;
+        }
+        
+        .result-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .transcription {
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow-x: auto;
+            display: block;
+        }
+        
+        .data-table table {
+            width: 100%;
+            min-width: 800px;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9em;
+        }
+        
+        .data-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table td {
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+        
+        .status-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .stat-box {
+            flex: 1;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⏱️ Timesheet Voice/Text Entry</h1>
+            <p class="subtitle">Speak or type your work activities - AI will structure them automatically</p>
+        </div>
+        
+        <div class="projects-info">
+            <h3>📋 Available Projects</h3>
+            <div class="project-list" id="project-list">
+                <div class="project-item">Loading projects...</div>
+            </div>
+        </div>
+        
+        <div class="input-selector">
+            <div class="input-option active" onclick="selectInput('text')">
+                <h3>📝 Text Input</h3>
+                <p>Type your work activities</p>
+            </div>
+            <div class="input-option" onclick="selectInput('recording')">
+                <h3>🎤 Voice Recording</h3>
+                <p>Record or upload audio</p>
+            </div>
+        </div>
+        
+        <div id="text-section" class="input-section active">
+            <div class="example-box">
+                <h4>💡 Example Input:</h4>
+                <p>"On Monday I did deployment of the data pipeline for Hackathon, took 8 hours. On Tuesday I was learning AWS SQS for about 3-4 hours for Ad hoc help project."</p>
+            </div>
+            <label for="text-input"><strong>Enter your work activities:</strong></label>
+            <textarea id="text-input" placeholder="Describe what you worked on... Include project names, days, and hours spent."></textarea>
+        </div>
+        
+        <div id="recording-section" class="input-section">
+            <div class="example-box">
+                <h4>💡 Example Recording:</h4>
+                <p>Speak naturally: "This Monday I worked on the Hackathon project, specifically on development tasks. I spent about 8 hours deploying the data pipeline..."</p>
+            </div>
+            <div class="recording-area">
+                <button class="record-btn" id="record-btn" onclick="toggleRecording()">🎤</button>
+                <p id="record-status">Click to start recording</p>
+                <p style="color: #999; font-size: 14px; margin-top: 10px;">Or upload an audio file below</p>
+            </div>
+            
+            <div class="file-upload">
+                <input type="file" id="file-input" class="file-input" accept="audio/*" onchange="handleFileSelect()">
+                <label for="file-input" class="file-label">📁 Upload Audio File</label>
+                <p class="file-name" id="file-name"></p>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="processData()" id="process-btn">🚀 Process Timesheet</button>
+            <!-- <button class="btn btn-secondary" onclick="downloadOutput()">⬇️ Download Data</button> -->
+            <button class="btn btn-secondary" onclick="clearOutput()">🗑️ Clear Entries</button>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Processing your timesheet entries...</p>
+        </div>
+        
+        <div class="result-section" id="result-section">
+            <!-- Results will be displayed here -->
+        </div>
+    </div>
+    
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let currentInputType = 'text';
+        let recordedAudioBlob = null;
+        
+        // Load projects on page load
+        window.addEventListener('DOMContentLoaded', loadProjects);
+        
+        async function loadProjects() {
+            try {
+                const response = await fetch('/projects');
+                const projects = await response.json();
+                
+                const projectList = document.getElementById('project-list');
+                if (projects.length === 0) {
+                    projectList.innerHTML = '<div class="project-item">No projects found</div>';
+                    return;
+                }
+                
+                projectList.innerHTML = projects.map(p => `
+                    <div class="project-item">
+                        <strong>${p.project_name}</strong>
+                        <div><span class="code">${p.project_code}</span> | ${p.task}</div>
+                        <div style="font-size: 0.85em; color: #666; margin-top: 5px;">Task ID: ${p.task_id}</div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error('Error loading projects:', err);
+            }
+        }
+        
+        function selectInput(type) {
+            currentInputType = type;
+            
+            document.querySelectorAll('.input-option').forEach(opt => opt.classList.remove('active'));
+            event.target.closest('.input-option').classList.add('active');
+            
+            document.querySelectorAll('.input-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(type + '-section').classList.add('active');
+        }
+        
+        async function toggleRecording() {
+            const btn = document.getElementById('record-btn');
+            const status = document.getElementById('record-status');
+            
+            if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    
+                    mediaRecorder.ondataavailable = (event) => {
+                        audioChunks.push(event.data);
+                    };
+                    
+                    mediaRecorder.onstop = () => {
+                        recordedAudioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        audioChunks = [];
+                        status.textContent = 'Recording saved! Click Process Timesheet to continue.';
+                        btn.textContent = '🎤';
+                        btn.classList.remove('recording');
+                    };
+                    
+                    mediaRecorder.start();
+                    btn.textContent = '⏹️';
+                    btn.classList.add('recording');
+                    status.textContent = 'Recording... Click to stop';
+                } catch (err) {
+                    alert('Error accessing microphone: ' + err.message);
+                }
+            } else {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
+        }
+        
+        function handleFileSelect() {
+            const fileInput = document.getElementById('file-input');
+            const fileName = document.getElementById('file-name');
+            
+            if (fileInput.files.length > 0) {
+                fileName.textContent = '📎 ' + fileInput.files[0].name;
+                recordedAudioBlob = fileInput.files[0];
+            }
+        }
+        
+        async function processData() {
+            const loading = document.getElementById('loading');
+            const resultSection = document.getElementById('result-section');
+            const processBtn = document.getElementById('process-btn');
+            
+            loading.classList.add('show');
+            resultSection.classList.remove('show');
+            processBtn.disabled = true;
+            
+            try {
+                const formData = new FormData();
+                formData.append('input_type', currentInputType);
+                
+                if (currentInputType === 'text') {
+                    const text = document.getElementById('text-input').value;
+                    if (!text.trim()) {
+                        throw new Error('Please enter some text describing your work activities');
+                    }
+                    formData.append('text_input', text);
+                } else {
+                    if (!recordedAudioBlob) {
+                        throw new Error('Please record or upload an audio file');
+                    }
+                    formData.append('audio_file', recordedAudioBlob, 'recording.webm');
+                }
+                
+                const response = await fetch('/process', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Processing failed');
+                }
+                
+                displayResults(data);
+            } catch (err) {
+                resultSection.innerHTML = `<div class="status-message error">❌ Error: ${err.message}</div>`;
+                resultSection.classList.add('show');
+            } finally {
+                loading.classList.remove('show');
+                processBtn.disabled = false;
+            }
+        }
+        
+        function displayResults(data) {
+            const resultSection = document.getElementById('result-section');
+            let html = '<div class="status-message success">✅ ' + data.message + '</div>';
+            
+            // Stats
+            html += '<div class="stats">';
+            html += `<div class="stat-box">
+                <div class="stat-number">${data.entry_count}</div>
+                <div class="stat-label">Entries Created</div>
+            </div>`;
+            
+            if (data.structured_data && data.structured_data.length > 0) {
+                const totalMinutes = data.structured_data.reduce((sum, entry) => sum + (entry.duration_minutes || 0), 0);
+                const totalHours = (totalMinutes / 60).toFixed(1);
+                html += `<div class="stat-box">
+                    <div class="stat-number">${totalHours}h</div>
+                    <div class="stat-label">Total Hours</div>
+                </div>`;
+                
+                const uniqueProjects = [...new Set(data.structured_data.map(e => e.project_code))].length;
+                html += `<div class="stat-box">
+                    <div class="stat-number">${uniqueProjects}</div>
+                    <div class="stat-label">Projects</div>
+                </div>`;
+            }
+            html += '</div>';
+            
+            if (data.transcription) {
+                html += '<h3>📝 Transcription:</h3>';
+                html += '<div class="transcription">' + escapeHtml(data.transcription) + '</div>';
+            }
+            
+            html += '<h3>📊 Timesheet Entries:</h3>';
+            
+            if (data.structured_data && data.structured_data.length > 0) {
+                html += '<div class="data-table"><table><thead><tr>';
+                html += '<th>Date</th>';
+                html += '<th>Project</th>';
+                html += '<th>Task</th>';
+                html += '<th>Duration</th>';
+                html += '<th>Comment</th>';
+                html += '</tr></thead><tbody>';
+                
+                data.structured_data.forEach(row => {
+                    const hours = row.duration_minutes ? (row.duration_minutes / 60).toFixed(1) : '0';
+                    html += '<tr>';
+                    html += '<td>' + escapeHtml(row.entry_date || '') + '</td>';
+                    html += '<td><strong>' + escapeHtml(row.project_code || '') + '</strong><br>' + 
+                            '<small>' + escapeHtml(row.project_name || '') + '</small></td>';
+                    html += '<td>' + escapeHtml(row.task_name || '') + '<br>' +
+                            '<small style="color: #667eea;">' + escapeHtml(row.task_id || '') + '</small></td>';
+                    html += '<td><strong>' + hours + ' hrs</strong><br>' +
+                            '<small>(' + (row.duration_minutes || 0) + ' min)</small></td>';
+                    html += '<td>' + escapeHtml(row.comment || '') + '</td>';
+                    html += '</tr>';
+                });
+                
+                html += '</tbody></table></div>';
+            } else {
+                html += '<p>No timesheet entries extracted.</p>';
+            }
+            
+            resultSection.innerHTML = html;
+            resultSection.classList.add('show');
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        async function downloadOutput() {
+            try {
+                window.location.href = '/download';
+            } catch (err) {
+                alert('Error downloading file: ' + err.message);
+            }
+        }
+        
+        async function clearOutput() {
+            if (confirm('Are you sure you want to clear all timesheet entries? Projects will be preserved.')) {
+                try {
+                    const response = await fetch('/clear', { method: 'POST' });
+                    const data = await response.json();
+                    alert(data.message);
+                    document.getElementById('result-section').classList.remove('show');
+                } catch (err) {
+                    alert('Error clearing data: ' + err.message);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
