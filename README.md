@@ -21,6 +21,19 @@ It’s designed for **personal productivity**, helping you capture, understand, 
 <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/f34bbff5-b6bd-41c4-94c7-d323c46e36f3" />
 
 ---
+##  Live Demo Pics
+
+*Cannot Show confidential information of my personal timesheet sorry for the inconvinence.*
+
+<img width="1366" height="686" alt="image (10)" src="https://github.com/user-attachments/assets/2cbd9939-f2f0-4ddc-83af-4399532fcddc" />
+
+<img width="1180" height="635" alt="image (11)" src="https://github.com/user-attachments/assets/c87df54e-c0b0-4e98-a719-b9122f34dcca" />
+
+<img width="1118" height="387" alt="image (13)" src="https://github.com/user-attachments/assets/58a3339c-0163-4237-9266-627e243a88a6" />
+
+<img width="1131" height="584" alt="image (14)" src="https://github.com/user-attachments/assets/a4645470-ba53-4abc-8fab-875316b0ee1f" />
+
+---
 
 ##  Setup Instructions
 
