@@ -1,4 +1,5 @@
-# ChronoMind
+# ChronoMind - Vibe Coding Project
+**Entirely created by Claude AI with no involvement of human coding, apart from defining the use case and how AI can be applied.**
 
 ChronoMind is an **agentic AI project** that allows users to **record or write text**, automatically transcribes recordings, analyzes text using **Google Gemini**, and structures insights (like timesheets) into a **CSV format**.
 
@@ -11,7 +12,7 @@ It’s designed for **personal productivity**, helping you capture, understand, 
 -  **Voice & Text Input** — Accepts both recorded audio and typed text.  
 -  **Gemini AI Integration** — Uses Google’s Gemini model for transcription, text analysis, and structured data generation.  
 -  **CSV Export** — Automatically generates structured outputs.  
--  **Agentic Context Awareness** — Learns from your previous context or “knowledge base.”  
+-  **Agentic Context Awareness** — Learns from your “knowledge base.”  
 -  **Custom Schema** — You define your own JSON schema for storing the extracted data.
 
 ---
